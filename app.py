@@ -18,7 +18,7 @@ st.write("Upload a chest X-ray image to get instant AI prediction along with Gra
 @st.cache_resource
 def load_model():
     # ⚠️ Apna sahi Hugging Face username aur repo name yahan likhein
-    repo_id = "YOUR_USERNAME/Chest-Xray-Pneumonia-ResNet50" 
+    repo_id = "taqijaved/Chest-Xray-Pneumonia-ResNet50" 
     filename = "resnet50_pneumonia_model.pth"
     
     with st.spinner("Downloading AI Model from Hugging Face... Please wait."):
