@@ -3,5 +3,5 @@ torchvision
 streamlit
 pillow
 numpy
-opencv-python
 matplotlib
+huggingface_hub
