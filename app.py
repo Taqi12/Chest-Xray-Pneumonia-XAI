@@ -5,7 +5,6 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 from PIL import Image
 import numpy as np
-import cv2
 import matplotlib.pyplot as plt
 from huggingface_hub import hf_hub_download
 
@@ -18,8 +17,8 @@ st.write("Upload a chest X-ray image to get instant AI prediction along with Gra
 # 1. Load Trained ResNet50 Model from Hugging Face (Cached for performance)
 @st.cache_resource
 def load_model():
-    # ⚠️ Apne Hugging Face repository ka sahi username aur repo name yahan likhein
-    repo_id = "taqijaved/Chest-Xray-Pneumonia-ResNet50" 
+    # ⚠️ Apna sahi Hugging Face username aur repo name yahan likhein
+    repo_id = "YOUR_USERNAME/Chest-Xray-Pneumonia-ResNet50" 
     filename = "resnet50_pneumonia_model.pth"
     
     with st.spinner("Downloading AI Model from Hugging Face... Please wait."):
@@ -94,7 +93,7 @@ if uploaded_file is not None:
             h1.remove()
             h2.remove()
 
-            # Generate Heatmap
+            # Generate Heatmap (Using PIL/NumPy resizing instead of cv2)
             pooled_gradients = torch.mean(gradient, dim=[0, 2, 3])
             for i in range(activation.shape[1]):
                 activation[0, i, :, :] *= pooled_gradients[i]
@@ -104,7 +103,10 @@ if uploaded_file is not None:
             if heatmap.max() != 0:
                 heatmap /= heatmap.max()
 
-            heatmap = cv2.resize(heatmap, (224, 224))
+            # Resize heatmap using PIL Image to avoid OpenCV dependency error
+            heatmap_img = Image.fromarray(np.uint8(255 * heatmap))
+            heatmap_img = heatmap_img.resize((224, 224), Image.Resampling.BILINEAR)
+            heatmap = np.array(heatmap_img) / 255.0
             
             # Convert original image for plotting
             img_resized = image.resize((224, 224))
